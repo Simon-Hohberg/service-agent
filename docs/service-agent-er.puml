@@ -1,0 +1,48 @@
+@startuml
+
+entity Tenant {
+    name
+}
+
+entity User {
+    id
+    --
+    name
+}
+
+entity ServiceCall {
+    id
+    --
+    name
+    submitted
+    status
+    protocol
+    --
+    executed
+    scheduledAt
+}
+
+entity HttpServiceCallDetail {
+    id
+    --
+    url
+    requestHeaders
+    requestBody
+    responseStatusCode
+    responseHeaders
+    responseBody
+    fk_serviceCall
+}
+
+entity ServiceCallFavorite {
+    fk_userId
+    fk_serviceCallId
+}
+
+
+User }o--|{ Tenant : Tenant Users
+ServiceCall }o--|| Tenant : Tenant Service Calls
+User }o--o{ ServiceCallFavorite : User Service Call Favorites
+ServiceCallFavorite ||--|| ServiceCall
+
+@enduml
