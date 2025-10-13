@@ -36,6 +36,19 @@ export function tenantRoutes(_fastify: typeof fastify) {
     }
   );
 
+  _fastify.delete(
+    '/:tenantId',
+    {
+      schema: {
+        params: tenantParamSchema,
+      },
+    },
+    async (request, reply) => {
+      await tenantPersistence.deleteTenant(request.params.tenantId);
+      return reply.status(204).send();
+    }
+  );
+
   _fastify.post(
     '/:tenantId/user',
     {
@@ -97,6 +110,9 @@ export function tenantRoutes(_fastify: typeof fastify) {
       if (userId === undefined) {
         return reply.status(400).send({ message: 'Missing userId in request context' });
       }
+      if (!tenantPersistence.isUserInTenant(userId, tenantId)) {
+        return reply.status(404).send({ message: 'User is not in tenant' });
+      }
       const serviceCalls = await serviceCallPersistence.getServiceCalls(tenantId);
       const favorites = await userPersistence.getServiceCallFavorites(userId);
 
@@ -127,6 +143,13 @@ export function tenantRoutes(_fastify: typeof fastify) {
     },
     async (request, reply) => {
       const tenantId = request.params.tenantId;
+      const userId = request.requestContext.get('userId');
+      if (userId === undefined) {
+        return reply.status(400).send({ message: 'Missing userId in request context' });
+      }
+      if (!tenantPersistence.isUserInTenant(userId, tenantId)) {
+        return reply.status(404).send({ message: 'User is not in tenant' });
+      }
 
       const serviceCallData = {
         tenantId,
