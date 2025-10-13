@@ -22,8 +22,8 @@ model Tenant {
 
 model UserTenant {
   id       Int    @id @default(autoincrement())
-  user     User   @relation(fields: [userId], references: [id])
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tenantId String
   userId   String
 
@@ -57,7 +57,7 @@ model ServiceCall {
 model ServiceCallFavorite {
   id            Int         @id @default(autoincrement())
   userId        String
-  user          User        @relation(fields: [userId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   serviceCallId Int
   serviceCall   ServiceCall @relation(fields: [serviceCallId], references: [id])
 

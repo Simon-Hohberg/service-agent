@@ -13,8 +13,8 @@ CREATE TABLE "UserTenant" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "tenantId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    CONSTRAINT "UserTenant_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "UserTenant_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "UserTenant_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "UserTenant_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -35,7 +35,7 @@ CREATE TABLE "ServiceCallFavorite" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "userId" TEXT NOT NULL,
     "serviceCallId" INTEGER NOT NULL,
-    CONSTRAINT "ServiceCallFavorite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "ServiceCallFavorite_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "ServiceCallFavorite_serviceCallId_fkey" FOREIGN KEY ("serviceCallId") REFERENCES "ServiceCall" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 

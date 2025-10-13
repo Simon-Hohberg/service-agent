@@ -1,5 +1,5 @@
 import { RouteHandler } from 'fastify';
-import { db } from '../../db.js';
+import { db } from '../../db/db.js';
 
 /* This is where authentication would happen. However, here we just extract userId and tenantId from headers and set them in request context */
 export const authHandler: RouteHandler = async (req, reply) => {

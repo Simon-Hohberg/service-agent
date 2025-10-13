@@ -1,5 +1,5 @@
 import { CreateHttpServiceCall, UserWithTenantsDTO } from 'common';
-import { HttpServiceCallDetails, Prisma, PrismaClient, ServiceCall } from '../generated/client/client.js';
+import { HttpServiceCallDetails, Prisma, PrismaClient, ServiceCall } from '../../generated/client/client.js';
 
 export type CreateServiceCall = CreateHttpServiceCall & { protocol: 'HTTP'; tenantId: string };
 
@@ -11,11 +11,7 @@ export type CreateServiceCallResult = {
 };
 
 export class DB {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
+  constructor(private prisma: PrismaClient = new PrismaClient()) {}
 
   createUser(id: string, tenantId: string) {
     return this.prisma.user.create({
@@ -80,6 +76,10 @@ export class DB {
     });
   }
 
+  getTenants() {
+    return this.prisma.tenant.findMany();
+  }
+
   deleteTenant(id: string) {
     return this.prisma.tenant.delete({
       where: {
@@ -97,7 +97,21 @@ export class DB {
     });
   }
 
-  removeUserFromTenant(userId: string, tenantId: string) {
+  async removeUserFromTenant(userId: string, tenantId: string) {
+    const userTenants = await this.prisma.userTenant.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        tenantId: true,
+      },
+    });
+    if (!userTenants.some((t) => t.tenantId === tenantId)) {
+      throw new Error('User is not part of the specified tenant');
+    }
+    if (userTenants.length === 1) {
+      throw new Error('User must belong to at least one tenant');
+    }
     return this.prisma.userTenant.deleteMany({
       where: {
         userId,

@@ -1,5 +1,5 @@
 import { tentantDtoSchema } from 'common';
-import { db } from '../../db.js';
+import { db } from '../../db/db.js';
 import { fastify } from '../fastify.js';
 
 export function tenantManagementRoutes(_fastify: typeof fastify) {

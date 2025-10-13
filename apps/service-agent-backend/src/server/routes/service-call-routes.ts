@@ -1,6 +1,6 @@
 import { createHttpServiceCallDtoSchema, getServiceCallsDtoSchema } from 'common';
 import { scheduleJob } from 'node-schedule';
-import { db } from '../../db.js';
+import { db } from '../../db/db.js';
 import { executeServiceCall } from '../../service-call-executor/service-call-executor.js';
 import { fastify } from '../fastify.js';
 import { authHandler } from './auth-handler.js';

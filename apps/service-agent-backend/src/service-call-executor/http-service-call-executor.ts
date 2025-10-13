@@ -1,4 +1,4 @@
-import { CreateServiceCallResult, db } from '../db.js';
+import { CreateServiceCallResult, db } from '../db/db.js';
 
 export async function executeHttpServiceCall(serviceCallData: CreateServiceCallResult) {
   // Simulate HTTP call execution

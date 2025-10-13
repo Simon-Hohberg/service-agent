@@ -1,5 +1,5 @@
 import { fastify } from '../fastify.js';
-import { db } from '../../db.js';
+import { db } from '../../db/db.js';
 import { userDtoSchema, createUserDtoSchema, tentantDtoSchema, userWithTenantsDtoSchema } from 'common';
 
 export function userManagementRoutes(_fastify: typeof fastify) {
