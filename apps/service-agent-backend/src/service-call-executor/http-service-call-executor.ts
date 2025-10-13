@@ -18,7 +18,7 @@ export async function executeHttpServiceCall(serviceCallData: CreateServiceCallR
   console.log('Simulated Response:', simulatedResponse);
 
   await db.updateServiceCall(serviceCallData.serviceCall.id, {
-    executed: new Date(),
+    executedAt: new Date(),
     status: 'EXECUTED',
     httpDetails: {
       update: {

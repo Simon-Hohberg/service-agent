@@ -47,8 +47,8 @@ model ServiceCall {
   name                String
   status              ServiceCallStatus       @default(PENDING)
   protocol            Protocol
-  submitted           DateTime                @default(now())
-  executed            DateTime?
+  submittedAt         DateTime                @default(now())
+  executedAt          DateTime?
   scheduledAt         DateTime?
   serviceCallFavorite ServiceCallFavorite[]
   httpDetails         HttpServiceCallDetails?

@@ -147,6 +147,29 @@ export class DB {
       data: serviceCallData,
     });
   }
+
+  getServiceCalls(tenantId: string): Promise<ServiceCall[]> {
+    return this.prisma.serviceCall.findMany({
+      where: {
+        tenantId,
+      },
+      orderBy: {
+        submittedAt: 'desc',
+      },
+    });
+  }
+
+  async getServiceCallFavorites(userId: string): Promise<number[]> {
+    const favorites = await this.prisma.serviceCallFavorite.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        serviceCallId: true,
+      },
+    });
+    return favorites.map((f) => f.serviceCallId);
+  }
 }
 
 export const db = new DB();

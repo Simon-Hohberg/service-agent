@@ -24,8 +24,8 @@ CREATE TABLE "ServiceCall" (
     "name" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'PENDING',
     "protocol" TEXT NOT NULL,
-    "submitted" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "executed" DATETIME,
+    "submittedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "executedAt" DATETIME,
     "scheduledAt" DATETIME,
     CONSTRAINT "ServiceCall_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
