@@ -3,11 +3,11 @@ import { db } from '../../db.js';
 import { userDtoSchema, createUserDtoSchema, tentantDtoSchema, userWithTenantsDtoSchema } from 'common';
 
 export function userManagementRoutes(_fastify: typeof fastify) {
-  _fastify.get(
-    '/user/:id',
+  _fastify.post(
+    '/signin',
     {
       schema: {
-        params: userDtoSchema,
+        body: userDtoSchema,
         response: {
           200: userWithTenantsDtoSchema,
           404: {
@@ -22,8 +22,7 @@ export function userManagementRoutes(_fastify: typeof fastify) {
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string };
-      const user = await db.getUser(id);
+      const user = await db.getUser(request.body.id);
       if (!user) {
         return reply.status(404).send({ message: 'User not found' });
       }
@@ -32,7 +31,7 @@ export function userManagementRoutes(_fastify: typeof fastify) {
   );
 
   _fastify.post(
-    '/user',
+    '/',
     {
       schema: {
         body: createUserDtoSchema,
@@ -45,20 +44,7 @@ export function userManagementRoutes(_fastify: typeof fastify) {
   );
 
   _fastify.post(
-    '/tenant',
-    {
-      schema: {
-        body: tentantDtoSchema,
-      },
-    },
-    async (request, reply) => {
-      await db.createTenant(request.body.id);
-      return reply.status(201).send();
-    }
-  );
-
-  _fastify.post(
-    '/user/:id/tenants',
+    '/user/tenants',
     {
       schema: {
         params: userDtoSchema,

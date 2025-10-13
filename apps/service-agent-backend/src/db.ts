@@ -1,4 +1,4 @@
-import { UserDTO, UserWithTenantsDTO } from 'common';
+import { UserWithTenantsDTO } from 'common';
 import { PrismaClient } from '../generated/client/client.js';
 
 export class DB {
