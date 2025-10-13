@@ -36,12 +36,9 @@ export const createUserDtoSchema = {
   type: 'object',
   properties: {
     ...userProperties,
-    tenantId: {
-      type: 'string',
-    },
   },
   additionalProperties: false,
-  required: ['id', 'tenantId'],
+  required: ['id'],
 } as const satisfies JSONSchema;
 
 export type CreateUserDTO = FromSchema<typeof createUserDtoSchema>;

@@ -1,4 +1,4 @@
-import { CreateServiceCallResult, db } from '../db/service-call-persistence.js';
+import { CreateServiceCallResult, serviceCallPersistence } from '../db/service-call-persistence.js';
 
 export async function executeHttpServiceCall(serviceCallData: CreateServiceCallResult) {
   // Simulate HTTP call execution
@@ -17,7 +17,7 @@ export async function executeHttpServiceCall(serviceCallData: CreateServiceCallR
   };
   console.log('Simulated Response:', simulatedResponse);
 
-  await db.updateServiceCall(serviceCallData.serviceCall.id, {
+  await serviceCallPersistence.updateServiceCall(serviceCallData.serviceCall.id, {
     executedAt: new Date(),
     status: 'EXECUTED',
     httpDetails: {

@@ -68,4 +68,4 @@ export class ServiceCallPersistence {
   }
 }
 
-export const db = new ServiceCallPersistence();
+export const serviceCallPersistence = new ServiceCallPersistence();
