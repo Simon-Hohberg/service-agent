@@ -4,6 +4,6 @@ requirements.md
 dist
 generated
 # Prisma SQL dev database
-dev.db
+**/*.db
 # Keep environment variables out of version control
 .env

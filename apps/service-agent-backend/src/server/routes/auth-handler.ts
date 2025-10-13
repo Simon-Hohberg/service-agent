@@ -1,5 +1,5 @@
 import { RouteHandler } from 'fastify';
-import { db } from '../../db/db.js';
+import { tenantPersistence } from '../../db/tenant-persistence.js';
 
 /* This is where authentication would happen. However, here we just extract userId and tenantId from headers and set them in request context */
 export const authHandler: RouteHandler = async (req, reply) => {
@@ -9,7 +9,7 @@ export const authHandler: RouteHandler = async (req, reply) => {
     reply.status(400).send({ message: 'Missing or malformed x-user-id or x-tenant-id header' });
     return;
   }
-  if (!(await db.isUserInTenant(userId, tenantId))) {
+  if (!(await tenantPersistence.isUserInTenant(userId, tenantId))) {
     reply.status(403).send({ message: 'User does not belong to the specified tenant' });
     return;
   }

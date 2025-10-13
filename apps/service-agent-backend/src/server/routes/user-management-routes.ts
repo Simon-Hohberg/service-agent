@@ -1,6 +1,7 @@
+import { createUserDtoSchema, tentantDtoSchema, userDtoSchema, userWithTenantsDtoSchema } from 'common';
+import { tenantPersistence } from '../../db/tenant-persistence.js';
+import { userPersistence } from '../../db/user-persistence.js';
 import { fastify } from '../fastify.js';
-import { db } from '../../db/db.js';
-import { userDtoSchema, createUserDtoSchema, tentantDtoSchema, userWithTenantsDtoSchema } from 'common';
 
 export function userManagementRoutes(_fastify: typeof fastify) {
   _fastify.post(
@@ -22,7 +23,7 @@ export function userManagementRoutes(_fastify: typeof fastify) {
       },
     },
     async (request, reply) => {
-      const user = await db.getUser(request.body.id);
+      const user = await userPersistence.getUser(request.body.id);
       if (!user) {
         return reply.status(404).send({ message: 'User not found' });
       }
@@ -38,13 +39,13 @@ export function userManagementRoutes(_fastify: typeof fastify) {
       },
     },
     async (request, reply) => {
-      await db.createUser(request.body.id, request.body.tenantId);
+      await userPersistence.createUser(request.body.id, request.body.tenantId);
       return reply.status(201).send();
     }
   );
 
   _fastify.post(
-    '/user/tenants',
+    '/tenants',
     {
       schema: {
         params: userDtoSchema,
@@ -52,7 +53,7 @@ export function userManagementRoutes(_fastify: typeof fastify) {
       },
     },
     async (request, reply) => {
-      await db.addUserToTenant(request.params.id, request.body.id);
+      await tenantPersistence.addUserToTenant(request.params.id, request.body.id);
       return reply.status(201).send();
     }
   );

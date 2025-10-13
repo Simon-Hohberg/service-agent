@@ -1,5 +1,5 @@
 import { Protocol } from '../../generated/client/client.js';
-import { CreateServiceCallResult } from '../db/db.js';
+import { CreateServiceCallResult } from '../db/service-call-persistence.js';
 import { executeHttpServiceCall } from './http-service-call-executor.js';
 
 const serviceCallExecutorsMap = new Map<Protocol, (serviceCallData: CreateServiceCallResult) => Promise<any>>([

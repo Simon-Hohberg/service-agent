@@ -1,9 +1,10 @@
 import { createHttpServiceCallDtoSchema, getServiceCallsDtoSchema } from 'common';
 import { scheduleJob } from 'node-schedule';
-import { db } from '../../db/db.js';
+import { db } from '../../db/service-call-persistence.js';
 import { executeServiceCall } from '../../service-call-executor/service-call-executor.js';
 import { fastify } from '../fastify.js';
 import { authHandler } from './auth-handler.js';
+import { userPersistence } from '../../db/user-persistence.js';
 
 export function serviceCallRoutes(_fastify: typeof fastify) {
   _fastify.get(
@@ -39,7 +40,7 @@ export function serviceCallRoutes(_fastify: typeof fastify) {
         return reply.status(400).send({ message: 'Missing tenantId or userId in request context' });
       }
       const serviceCalls = await db.getServiceCalls(tenantId);
-      const favorites = await db.getServiceCallFavorites(userId);
+      const favorites = await userPersistence.getServiceCallFavorites(userId);
 
       return reply.send(
         serviceCalls.map((sc) => ({
@@ -61,6 +62,7 @@ export function serviceCallRoutes(_fastify: typeof fastify) {
     {
       schema: {
         body: createHttpServiceCallDtoSchema,
+        // TODO: response type
       },
       preHandler: authHandler,
     },

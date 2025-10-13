@@ -1,5 +1,5 @@
 import { tentantDtoSchema } from 'common';
-import { db } from '../../db/db.js';
+import { tenantPersistence } from '../../db/tenant-persistence.js';
 import { fastify } from '../fastify.js';
 
 export function tenantManagementRoutes(_fastify: typeof fastify) {
@@ -11,7 +11,7 @@ export function tenantManagementRoutes(_fastify: typeof fastify) {
       },
     },
     async (request, reply) => {
-      await db.createTenant(request.body.id);
+      await tenantPersistence.createTenant(request.body.id);
       return reply.status(201).send();
     }
   );

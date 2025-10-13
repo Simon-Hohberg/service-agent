@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc && cp package.json dist/",
+    "build": "rm -rf dist && tsc && cp package.json dist/",
     "start": "node dist/index.js",
     "test": "rm -f prisma/jest-test.db && export DATABASE_URL='file:./jest-test.db' && npx prisma migrate deploy && node --experimental-vm-modules node_modules/jest/bin/jest.js dist"
   },
