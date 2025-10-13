@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import { userManagementRoutes } from './routes/user-management-routes.js';
 import fastifyRequestContext from '@fastify/request-context';
 import tenantManagementRoutes from './routes/tenant-management-routes.js';
+import { serviceCallRoutes } from './routes/service-call-routes.js';
 
 declare module '@fastify/request-context' {
   interface RequestContextData {
@@ -18,3 +19,4 @@ export const fastify = Fastify({
 fastify.register(fastifyRequestContext);
 fastify.register(userManagementRoutes, { prefix: '/user' });
 fastify.register(tenantManagementRoutes, { prefix: '/tenant' });
+fastify.register(serviceCallRoutes, { prefix: '/serviceCall' });

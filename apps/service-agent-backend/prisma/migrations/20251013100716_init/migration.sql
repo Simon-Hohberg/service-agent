@@ -26,7 +26,7 @@ CREATE TABLE "ServiceCall" (
     "protocol" TEXT NOT NULL,
     "submitted" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "executed" DATETIME,
-    "scheduled" DATETIME,
+    "scheduledAt" DATETIME,
     CONSTRAINT "ServiceCall_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -39,8 +39,25 @@ CREATE TABLE "ServiceCallFavorite" (
     CONSTRAINT "ServiceCallFavorite_serviceCallId_fkey" FOREIGN KEY ("serviceCallId") REFERENCES "ServiceCall" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "HttpServiceCallDetails" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "serviceCallId" INTEGER NOT NULL,
+    "url" TEXT NOT NULL,
+    "method" TEXT NOT NULL,
+    "requestBody" TEXT,
+    "requestHeaders" JSONB,
+    "responseCode" INTEGER,
+    "responseBody" TEXT,
+    "responseHeaders" JSONB,
+    CONSTRAINT "HttpServiceCallDetails_serviceCallId_fkey" FOREIGN KEY ("serviceCallId") REFERENCES "ServiceCall" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "UserTenant_userId_tenantId_key" ON "UserTenant"("userId", "tenantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ServiceCallFavorite_userId_serviceCallId_key" ON "ServiceCallFavorite"("userId", "serviceCallId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "HttpServiceCallDetails_serviceCallId_key" ON "HttpServiceCallDetails"("serviceCallId");

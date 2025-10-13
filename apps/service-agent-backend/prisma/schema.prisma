@@ -41,16 +41,17 @@ enum Protocol {
 }
 
 model ServiceCall {
-  id                  Int                   @id @default(autoincrement())
+  id                  Int                     @id @default(autoincrement())
   tenantId            String
-  tenant              Tenant                @relation(fields: [tenantId], references: [id])
+  tenant              Tenant                  @relation(fields: [tenantId], references: [id])
   name                String
-  status              ServiceCallStatus     @default(PENDING)
+  status              ServiceCallStatus       @default(PENDING)
   protocol            Protocol
-  submitted           DateTime              @default(now())
+  submitted           DateTime                @default(now())
   executed            DateTime?
-  scheduled           DateTime?
-  ServiceCallFavorite ServiceCallFavorite[]
+  scheduledAt         DateTime?
+  serviceCallFavorite ServiceCallFavorite[]
+  httpDetails         HttpServiceCallDetails?
 }
 
 model ServiceCallFavorite {
@@ -61,4 +62,25 @@ model ServiceCallFavorite {
   serviceCall   ServiceCall @relation(fields: [serviceCallId], references: [id])
 
   @@unique([userId, serviceCallId])
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+}
+
+model HttpServiceCallDetails {
+  id              Int         @id @default(autoincrement())
+  serviceCallId   Int         @unique
+  serviceCall     ServiceCall @relation(fields: [serviceCallId], references: [id])
+  url             String
+  method          HttpMethod
+  requestBody     String?
+  requestHeaders  Json?
+  responseCode    Int?
+  responseBody    String?
+  responseHeaders Json?
 }
