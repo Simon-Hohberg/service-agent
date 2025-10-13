@@ -1,14 +1,18 @@
-import { userDtoSchema, userWithTenantsDtoSchema } from 'common';
+import { RouteHandler } from 'fastify';
 import { db } from '../../db.js';
-import { fastify } from '../fastify.js';
-import { FastifyReply, FastifyRequest, RouteHandler } from 'fastify';
 
 /* This is where authentication would happen. However, here we just extract userId and tenantId from headers and set them in request context */
-export const authHandler: RouteHandler = (req, reply) => {
-  if (!req.headers['x-user-id'] || !req.headers['x-tenant-id']) {
-    reply.status(400).send({ message: 'Missing x-user-id or x-tenant-id header' });
+export const authHandler: RouteHandler = async (req, reply) => {
+  const userId = req.headers['x-user-id'];
+  const tenantId = req.headers['x-tenant-id'];
+  if (!userId || !tenantId || Array.isArray(userId) || Array.isArray(tenantId)) {
+    reply.status(400).send({ message: 'Missing or malformed x-user-id or x-tenant-id header' });
     return;
   }
-  req.requestContext.set('userId', req.headers['x-user-id'] as string);
-  req.requestContext.set('tenantId', req.headers['x-tenant-id'] as string);
+  if (!(await db.isUserInTenant(userId, tenantId))) {
+    reply.status(403).send({ message: 'User does not belong to the specified tenant' });
+    return;
+  }
+  req.requestContext.set('userId', userId);
+  req.requestContext.set('tenantId', tenantId);
 };

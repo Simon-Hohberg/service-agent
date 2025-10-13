@@ -62,6 +62,16 @@ export class DB {
     };
   }
 
+  async isUserInTenant(userId: string, tenantId: string) {
+    const result = await this.prisma.userTenant.findFirst({
+      where: {
+        userId,
+        tenantId,
+      },
+    });
+    return result !== null;
+  }
+
   createTenant(id: string) {
     return this.prisma.tenant.create({
       data: {
