@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "apps/service-agent-backend",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: build - apps/service-agent-backend",
+      "detail": "tsc"
+    }
+  ]
+}

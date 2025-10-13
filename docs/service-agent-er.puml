@@ -1,13 +1,12 @@
 @startuml
 
 entity Tenant {
-    name
+    id
 }
 
 entity User {
     id
     --
-    name
 }
 
 entity ServiceCall {

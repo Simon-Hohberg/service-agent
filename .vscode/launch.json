@@ -1,0 +1,19 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Start Backend",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "preLaunchTask": "npm: build - apps/service-agent-backend",
+      "cwd": "${workspaceFolder}/apps/service-agent-backend",
+      "program": "${workspaceFolder}/apps/service-agent-backend/src/index.ts",
+      "outFiles": ["${workspaceFolder}/apps/service-agent-backend/dist/**/*.js"]
+    }
+  ]
+}
