@@ -1,17 +1,9 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
 export const serviceCallProperties = {
+  id: { type: 'number' },
   name: { type: 'string' },
   scheduledAt: { type: 'string', format: 'date-time' },
-} as const satisfies Record<string, JSONSchema>;
-
-type ServiceCallPropertiesType = keyof typeof serviceCallProperties;
-
-export const requiredServiceCallProperties: ServiceCallPropertiesType[] = ['name'] as const;
-
-export const getServiceCallProperties = {
-  id: { type: 'number' },
-  ...serviceCallProperties,
   protocol: { type: 'string', enum: ['HTTP'] },
   status: { type: 'string', enum: ['PENDING', 'EXECUTED', 'FAILED'] },
   submittedAt: { type: 'string', format: 'date-time' },
@@ -19,16 +11,10 @@ export const getServiceCallProperties = {
   isFavorite: { type: 'boolean' },
 } as const satisfies Record<string, JSONSchema>;
 
-type GetServiceCallPropertiesType = keyof typeof getServiceCallProperties;
-
-export const requiredGetServiceCallProperties: GetServiceCallPropertiesType[] = ['id', 'name'] as const;
-
-export const ServiceCallDtoSchema = {
+export const getServiceCallDtoSchema = {
   $id: 'serviceCall',
   type: 'object',
-  properties: {
-    ...getServiceCallProperties,
-  },
+  properties: serviceCallProperties,
   additionalProperties: false,
   required: ['id', 'name', 'protocol', 'status', 'submittedAt', 'isFavorite'],
 } as const satisfies JSONSchema;
@@ -36,7 +22,7 @@ export const ServiceCallDtoSchema = {
 export const getServiceCallsDtoSchema = {
   $id: 'httpServiceCall',
   type: 'array',
-  items: ServiceCallDtoSchema,
+  items: getServiceCallDtoSchema,
 } as const satisfies JSONSchema;
 
-export type ServiceCalls = FromSchema<typeof getServiceCallsDtoSchema>;
+export type GetServiceCalls = FromSchema<typeof getServiceCallsDtoSchema>;

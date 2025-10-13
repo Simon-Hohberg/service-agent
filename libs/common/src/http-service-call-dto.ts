@@ -1,23 +1,26 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
-import { requiredServiceCallProperties, serviceCallProperties } from './service-call-dto.js';
+import { serviceCallProperties } from './service-call-dto.js';
+import { omit } from './utils.js';
 
-const httpMessageBasicProperties = {
-  headers: {
-    type: 'object',
-    patternProperties: {
-      '^[a-zA-Z0-9-]+$': { type: 'string' },
-    },
-    additionalProperties: false,
+const headers = {
+  type: 'object',
+  patternProperties: {
+    '^[a-zA-Z0-9-]+$': { type: 'string' },
   },
-  body: { type: 'string' },
-} as const satisfies Record<string, JSONSchema>;
+  additionalProperties: false,
+} as const satisfies JSONSchema;
+
+export type HttpHeaders = FromSchema<typeof headers>;
+
+const body = { type: 'string' } as const satisfies JSONSchema;
 
 const httpRequest = {
   type: 'object',
   properties: {
     url: { type: 'string', format: 'uri' },
     method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] },
-    ...httpMessageBasicProperties,
+    headers,
+    body,
   },
   additionalProperties: false,
   required: ['url', 'method'],
@@ -27,36 +30,36 @@ const httpResponse = {
   type: 'object',
   properties: {
     statusCode: { type: 'integer', minimum: 100, maximum: 599 },
-    ...httpMessageBasicProperties,
+    headers,
+    body,
   },
-  required: ['statusCode'],
+  required: [],
   additionalProperties: false,
 } as const satisfies JSONSchema;
 
-export const httpServiceCallDtoSchema = {
+export const getHttpServiceCallDtoSchema = {
   $id: 'httpServiceCall',
   type: 'object',
   properties: {
     ...serviceCallProperties,
-    protocol: { type: 'string', const: 'HTTP' },
     request: httpRequest,
     response: httpResponse,
   },
   additionalProperties: false,
-  required: [...requiredServiceCallProperties, 'request', 'response'],
+  required: ['name', 'request', 'response'],
 } as const satisfies JSONSchema;
 
-export type HttpServiceCall = FromSchema<typeof httpServiceCallDtoSchema>;
+export type GetHttpServiceCall = FromSchema<typeof getHttpServiceCallDtoSchema>;
 
 export const createHttpServiceCallDtoSchema = {
   $id: 'createHttpServiceCall',
   type: 'object',
   properties: {
-    ...serviceCallProperties,
+    ...omit(serviceCallProperties, ['id', 'protocol']),
     request: httpRequest,
   },
   additionalProperties: false,
-  required: [...requiredServiceCallProperties, 'request'],
+  required: ['name', 'request'],
 } as const satisfies JSONSchema;
 
 export type CreateHttpServiceCall = FromSchema<typeof createHttpServiceCallDtoSchema>;

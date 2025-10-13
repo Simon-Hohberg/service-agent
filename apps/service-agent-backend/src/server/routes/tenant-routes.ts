@@ -1,17 +1,19 @@
 import {
   createHttpServiceCallDtoSchema,
   createUserDtoSchema,
+  getHttpServiceCallDtoSchema,
   getServiceCallsDtoSchema,
   tentantDtoSchema,
   userDtoSchema,
 } from 'common';
-import { tenantPersistence } from '../../db/tenant-persistence.js';
-import { fastify } from '../fastify.js';
-import { userPersistence } from '../../db/user-persistence.js';
-import { authHandler } from './auth-handler.js';
 import { scheduleJob } from 'node-schedule';
 import { serviceCallPersistence } from '../../db/service-call-persistence.js';
+import { tenantPersistence } from '../../db/tenant-persistence.js';
+import { userPersistence } from '../../db/user-persistence.js';
 import { serviceCallExecutor } from '../../service-call-executor/http-service-call-executor.js';
+import { fastify } from '../fastify.js';
+import { authHandler } from './auth-handler.js';
+import { convertHttpHeaders } from './dto-utils.js';
 
 export const tenantParamSchema = {
   type: 'object',
@@ -19,6 +21,16 @@ export const tenantParamSchema = {
     tenantId: { type: 'string' },
   },
   required: ['tenantId'],
+  additionalProperties: false,
+} as const;
+
+export const getHttpServiceCallParamSchema = {
+  type: 'object',
+  properties: {
+    tenantId: { type: 'string' },
+    serviceCallId: { type: 'number' },
+  },
+  required: ['tenantId', 'serviceCallId'],
   additionalProperties: false,
 } as const;
 
@@ -168,6 +180,84 @@ export function tenantRoutes(_fastify: typeof fastify) {
 
       const result = await serviceCallExecutor.executeHttpServiceCall(createServiceCallResult);
       return reply.status(201).send(result);
+    }
+  );
+
+  _fastify.get(
+    '/:tenantId/serviceCall/http/:serviceCallId',
+    {
+      schema: {
+        params: getHttpServiceCallParamSchema,
+        response: {
+          200: getHttpServiceCallDtoSchema,
+          400: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+            },
+            required: ['message'],
+            additionalProperties: false,
+          },
+          404: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+            },
+            required: ['message'],
+            additionalProperties: false,
+          },
+          500: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+            },
+            required: ['message'],
+            additionalProperties: false,
+          },
+        },
+      },
+      preHandler: authHandler,
+    },
+    async (request, reply) => {
+      const tenantId = request.params.tenantId;
+      const userId = request.requestContext.get('userId');
+      if (userId === undefined) {
+        return reply.status(400).send({ message: 'Missing userId in request context' });
+      }
+      if (!tenantPersistence.isUserInTenant(userId, tenantId)) {
+        return reply.status(404).send({ message: 'User is not in tenant' });
+      }
+
+      const result = await serviceCallPersistence.getHttpServiceCall(tenantId, request.params.serviceCallId);
+
+      if (result === null) {
+        return reply.status(404).send({ message: 'Service call not found' });
+      }
+
+      if (result.httpDetails === null) {
+        return reply.status(500).send({ message: 'Service call details not found' });
+      }
+
+      return reply.status(200).send({
+        name: result.name,
+        id: result?.id,
+        protocol: result?.protocol,
+        status: result?.status,
+        submittedAt: result?.submittedAt.toISOString(),
+        executedAt: result?.executedAt?.toISOString(),
+        scheduledAt: result?.scheduledAt?.toISOString(),
+        request: {
+          method: result.httpDetails.method,
+          url: result.httpDetails.url,
+          headers: convertHttpHeaders(result.httpDetails.requestHeaders),
+          body: result.httpDetails.requestBody || undefined,
+        },
+        response: {
+          statusCode: result.httpDetails.responseCode || undefined,
+          headers: convertHttpHeaders(result.httpDetails.responseHeaders),
+          body: result.httpDetails.responseBody || undefined,
+        },
+      });
     }
   );
 }

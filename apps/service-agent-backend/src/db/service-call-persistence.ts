@@ -66,6 +66,22 @@ export class ServiceCallPersistence {
       },
     });
   }
+
+  getHttpServiceCall(
+    tenantId: string,
+    serviceCallId: number
+  ): Promise<(ServiceCall & { httpDetails: HttpServiceCallDetails | null }) | null> {
+    return this.prisma.serviceCall.findUnique({
+      where: {
+        id: serviceCallId,
+        tenantId,
+        protocol: 'HTTP',
+      },
+      include: {
+        httpDetails: true,
+      },
+    });
+  }
 }
 
 export const serviceCallPersistence = new ServiceCallPersistence();

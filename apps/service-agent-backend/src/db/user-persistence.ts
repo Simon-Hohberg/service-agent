@@ -70,6 +70,18 @@ export class UserPersistence {
     });
     return favorites.map((f) => f.serviceCallId);
   }
+
+  async isServiceCallFavorite(userId: string, serviceCallId: number): Promise<boolean> {
+    const favorite = await this.prisma.serviceCallFavorite.findUnique({
+      where: {
+        userId_serviceCallId: {
+          userId,
+          serviceCallId,
+        },
+      },
+    });
+    return favorite !== null;
+  }
 }
 
 export const userPersistence = new UserPersistence();
