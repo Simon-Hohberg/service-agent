@@ -10,8 +10,8 @@ import { fastify } from '../fastify.js';
 import { userPersistence } from '../../db/user-persistence.js';
 import { authHandler } from './auth-handler.js';
 import { scheduleJob } from 'node-schedule';
-import { executeServiceCall } from '../../service-call-executor/service-call-executor.js';
 import { serviceCallPersistence } from '../../db/service-call-persistence.js';
+import { serviceCallExecutor } from '../../service-call-executor/http-service-call-executor.js';
 
 export const tenantParamSchema = {
   type: 'object',
@@ -161,12 +161,12 @@ export function tenantRoutes(_fastify: typeof fastify) {
 
       if (serviceCallData.scheduledAt) {
         scheduleJob(new Date(serviceCallData.scheduledAt), () => {
-          executeServiceCall(createServiceCallResult);
+          serviceCallExecutor.executeHttpServiceCall(createServiceCallResult);
         });
         return reply.status(201).send();
       }
 
-      const result = await executeServiceCall(createServiceCallResult);
+      const result = await serviceCallExecutor.executeHttpServiceCall(createServiceCallResult);
       return reply.status(201).send(result);
     }
   );
