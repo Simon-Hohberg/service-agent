@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import { authRoutes } from './routes/auth-routes.js';
 import fastifyRequestContext from '@fastify/request-context';
 import tenantRoutes from './routes/tenant-routes.js';
+import cors from '@fastify/cors';
 
 declare module '@fastify/request-context' {
   interface RequestContextData {
@@ -15,6 +16,9 @@ export const fastify = Fastify({
   logger: true,
 }).withTypeProvider<JsonSchemaToTsProvider>();
 
+fastify.register(cors, {
+  // put your options here
+});
 fastify.register(fastifyRequestContext);
 fastify.register(authRoutes, { prefix: '/auth' });
 fastify.register(tenantRoutes, { prefix: '/tenant' });

@@ -1,10 +1,13 @@
 import { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
+export const protocols = ['HTTP'] as const;
+export type Protocol = (typeof protocols)[number];
+
 export const serviceCallProperties = {
   id: { type: 'number' },
   name: { type: 'string' },
   scheduledAt: { type: 'string', format: 'date-time' },
-  protocol: { type: 'string', enum: ['HTTP'] },
+  protocol: { type: 'string', enum: protocols },
   status: { type: 'string', enum: ['PENDING', 'EXECUTED', 'FAILED'] },
   submittedAt: { type: 'string', format: 'date-time' },
   executedAt: { type: 'string', format: 'date-time' },

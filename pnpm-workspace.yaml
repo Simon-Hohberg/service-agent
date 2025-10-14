@@ -1,6 +1,14 @@
 packages:
-  - 'apps/*'
-  - 'libs/*'
+  - apps/*
+  - libs/*
+
 catalogs:
   prisma:
     prisma: latest
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - lmdb
+  - msgpackr-extract

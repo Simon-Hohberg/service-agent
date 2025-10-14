@@ -1,16 +1,10 @@
 {
-  "ts-node": {
-    "esm": true
-  },
   "compilerOptions": {
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "esnext",
     "target": "esnext",
     // For nodejs:
-    "lib": ["esnext"],
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
 
     // Other Outputs
     "sourceMap": true,

@@ -1,0 +1,10 @@
+<fieldset>
+  <select [(ngModel)]="selectedProtocol">
+    @for (protocol of protocols; track $index) {
+    <option [value]="protocol">{{ protocol }}</option>
+    }
+  </select>
+  <button routerLink="{{ [`/serviceCall/${selectedProtocol().toLocaleLowerCase()}/new`] }}">
+    New
+  </button>
+</fieldset>
