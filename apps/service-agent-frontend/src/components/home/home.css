@@ -1,0 +1,7 @@
+.tenant-select {
+  margin-top: 20px;
+}
+
+mat-toolbar {
+  min-height: 60px;
+}

@@ -2,19 +2,19 @@ import { httpResource } from '@angular/common/http';
 import { computed, inject, Injectable, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserDTO, UserWithTenantsDTO } from 'common';
+import { environment } from '../environments/environment.js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   readonly router = inject(Router);
-  readonly userId = signal<string>('');
-
-  signInResource = httpResource<UserWithTenantsDTO>(() => {
-    const userId = this.userId();
+  private readonly _userId = signal<string>('');
+  readonly signInResource = httpResource<UserWithTenantsDTO>(() => {
+    const userId = this._userId();
     if (!!userId) {
       return {
-        url: `http://localhost:3000/auth/signin`,
+        url: `${environment.apiUrl}/auth/signin`,
         method: 'POST',
         body: {
           id: userId,
@@ -24,14 +24,15 @@ export class UserService {
       return undefined;
     }
   });
-
-  isSignedIn = computed(() => {
-    if (this.signInResource.hasValue()) {
-      return true;
-    } else {
-      return false;
+  readonly userTenants = computed(() => {
+    if (!this.signInResource.hasValue()) {
+      return [];
     }
+    return this.signInResource.value().tenants;
   });
+  private readonly _currentTenant = signal<string | null>(null);
+
+  isSignedIn = computed(() => this.signInResource.hasValue());
 
   constructor() {
     effect(() => {
@@ -39,9 +40,24 @@ export class UserService {
         this.router.navigate(['/']);
       }
     });
+    effect(() => {
+      console.log(`current tenant: ${this._currentTenant()}`);
+    });
+  }
+
+  get currentTenant() {
+    return this._currentTenant.asReadonly();
+  }
+
+  get userId() {
+    return this._userId.asReadonly();
   }
 
   signIn(userId: string) {
-    this.userId.set(userId);
+    this._userId.set(userId);
+  }
+
+  setCurrentTenant(tenantId: string) {
+    this._currentTenant.set(tenantId);
   }
 }

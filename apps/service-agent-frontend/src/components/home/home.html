@@ -1,2 +1,19 @@
-<h1>Service Call Agent</h1>
+<mat-toolbar>
+  <h1>Service Agent</h1>
+  <span class="spacer"></span>
+  <div class="tenant-select">
+    <mat-form-field appearance="outline">
+      <mat-label>Tenant</mat-label>
+      <mat-select
+        [value]="userService.currentTenant()"
+        (selectionChange)="userService.setCurrentTenant($event.value)"
+      >
+        @for (tenant of userService.userTenants(); track tenant.id) {
+        <mat-option [value]="tenant.id">{{ tenant.id }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-toolbar>
+
 <router-outlet />
