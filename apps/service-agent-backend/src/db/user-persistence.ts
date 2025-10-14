@@ -82,6 +82,31 @@ export class UserPersistence {
     });
     return favorite !== null;
   }
+
+  async addServiceCallFavorite(userId: string, serviceCallId: number): Promise<void> {
+    await this.prisma.serviceCallFavorite.upsert({
+      where: {
+        userId_serviceCallId: {
+          userId,
+          serviceCallId,
+        },
+      },
+      create: {
+        userId,
+        serviceCallId,
+      },
+      update: {},
+    });
+  }
+
+  async removeServiceCallFavorite(userId: string, serviceCallId: number): Promise<void> {
+    await this.prisma.serviceCallFavorite.deleteMany({
+      where: {
+        userId,
+        serviceCallId,
+      },
+    });
+  }
 }
 
 export const userPersistence = new UserPersistence();

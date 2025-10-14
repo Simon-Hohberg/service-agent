@@ -102,4 +102,160 @@ describe('UserPersistence', () => {
   test('should fail to delete a non-existent user', async () => {
     await expect(userPersistence.deleteUser('notExistingUser')).rejects.toThrow();
   });
+
+  test('should get service call favorites for a user', async () => {
+    const tenantId = 'tenant1';
+    const userId = 'user1';
+    await prismaTestingClient.tenant.create({
+      data: {
+        id: tenantId,
+      },
+    });
+    await prismaTestingClient.user.create({
+      data: { id: userId, tenants: { create: { tenantId: tenantId } } },
+    });
+    await prismaTestingClient.serviceCall.createMany({
+      data: [
+        {
+          id: 1,
+          tenantId: tenantId,
+          name: 'Service Call 1',
+          protocol: 'HTTP',
+          status: 'PENDING',
+          submittedAt: new Date(),
+        },
+        {
+          id: 2,
+          tenantId: tenantId,
+          name: 'Service Call 2',
+          protocol: 'HTTP',
+          status: 'PENDING',
+          submittedAt: new Date(),
+        },
+        {
+          id: 3,
+          tenantId: tenantId,
+          name: 'Service Call 3',
+          protocol: 'HTTP',
+          status: 'PENDING',
+          submittedAt: new Date(),
+        },
+      ],
+    });
+    await prismaTestingClient.serviceCallFavorite.createMany({
+      data: [
+        { userId: userId, serviceCallId: 1 },
+        { userId: userId, serviceCallId: 3 },
+      ],
+    });
+
+    const favorites = await userPersistence.getServiceCallFavorites(userId);
+
+    expect(favorites).toBeDefined();
+    expect(favorites).toHaveLength(2);
+    expect(favorites.sort()).toEqual([1, 3].sort());
+  });
+
+  test('should add a service call favorite for a user', async () => {
+    const tenantId = 'tenant1';
+    const userId = 'user1';
+    const serviceCallId = 1;
+    await prismaTestingClient.tenant.create({
+      data: {
+        id: tenantId,
+      },
+    });
+    await prismaTestingClient.user.create({
+      data: { id: userId, tenants: { create: { tenantId: tenantId } } },
+    });
+    await prismaTestingClient.serviceCall.create({
+      data: {
+        id: serviceCallId,
+        tenantId: tenantId,
+        name: 'Service Call 1',
+        protocol: 'HTTP',
+        status: 'PENDING',
+        submittedAt: new Date(),
+      },
+    });
+
+    await userPersistence.addServiceCallFavorite(userId, serviceCallId);
+
+    const favorites = await prismaTestingClient.serviceCallFavorite.findMany({
+      where: { userId: userId },
+    });
+    expect(favorites).toBeDefined();
+    expect(favorites).toHaveLength(1);
+    expect(favorites[0].serviceCallId).toBe(serviceCallId);
+  });
+
+  test('should do nothing when adding a duplicate service call favorite for a user', async () => {
+    const tenantId = 'tenant1';
+    const userId = 'user1';
+    const serviceCallId = 1;
+    await prismaTestingClient.tenant.create({
+      data: {
+        id: tenantId,
+      },
+    });
+    await prismaTestingClient.user.create({
+      data: { id: userId, tenants: { create: { tenantId: tenantId } } },
+    });
+    await prismaTestingClient.serviceCall.create({
+      data: {
+        id: serviceCallId,
+        tenantId: tenantId,
+        name: 'Service Call 1',
+        protocol: 'HTTP',
+        status: 'PENDING',
+        submittedAt: new Date(),
+      },
+    });
+    await prismaTestingClient.serviceCallFavorite.create({
+      data: { userId: userId, serviceCallId: serviceCallId },
+    });
+    await userPersistence.addServiceCallFavorite(userId, serviceCallId);
+    await userPersistence.addServiceCallFavorite(userId, serviceCallId);
+    const favorites = await prismaTestingClient.serviceCallFavorite.findMany({
+      where: { userId: userId },
+    });
+    expect(favorites).toBeDefined();
+    expect(favorites).toHaveLength(1);
+    expect(favorites[0].serviceCallId).toBe(serviceCallId);
+  });
+
+  test('should remove a service call favorite for a user', async () => {
+    const tenantId = 'tenant1';
+    const userId = 'user1';
+    const serviceCallId = 1;
+    await prismaTestingClient.tenant.create({
+      data: {
+        id: tenantId,
+      },
+    });
+    await prismaTestingClient.user.create({
+      data: { id: userId, tenants: { create: { tenantId: tenantId } } },
+    });
+    await prismaTestingClient.serviceCall.create({
+      data: {
+        id: serviceCallId,
+        tenantId: tenantId,
+        name: 'Service Call 1',
+        protocol: 'HTTP',
+        status: 'PENDING',
+        submittedAt: new Date(),
+      },
+    });
+    await prismaTestingClient.serviceCallFavorite.create({
+      data: { userId: userId, serviceCallId: serviceCallId },
+    });
+
+    await userPersistence.removeServiceCallFavorite(userId, serviceCallId);
+
+    const favorites = await prismaTestingClient.serviceCallFavorite.findMany({
+      where: { userId: userId },
+    });
+    expect(favorites).toBeDefined();
+    expect(favorites).toHaveLength(0);
+  });
 });

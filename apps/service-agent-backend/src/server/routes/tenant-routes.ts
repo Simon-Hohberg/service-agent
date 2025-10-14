@@ -143,6 +143,68 @@ export function tenantRoutes(_fastify: typeof fastify) {
     }
   );
 
+  _fastify.put(
+    '/:tenantId/serviceCall/:serviceCallId/favorite',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            tenantId: { type: 'string' },
+            serviceCallId: { type: 'number' },
+          },
+          required: ['tenantId', 'serviceCallId'],
+          additionalProperties: false,
+        },
+      },
+      preHandler: authHandler,
+    },
+    async (request, reply) => {
+      const tenantId = request.params.tenantId;
+      const serviceCallId = request.params.serviceCallId;
+      const userId = request.requestContext.get('userId');
+      if (userId === undefined) {
+        return reply.status(400).send({ message: 'Missing userId in request context' });
+      }
+      if (!tenantPersistence.isUserInTenant(userId, tenantId)) {
+        return reply.status(404).send({ message: 'User is not in tenant' });
+      }
+      await userPersistence.addServiceCallFavorite(userId, serviceCallId);
+      return reply.status(204).send();
+    }
+  );
+
+  _fastify.delete(
+    '/:tenantId/serviceCall/:serviceCallId/favorite',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            tenantId: { type: 'string' },
+            serviceCallId: { type: 'number' },
+          },
+          required: ['tenantId', 'serviceCallId'],
+          additionalProperties: false,
+        },
+      },
+      preHandler: authHandler,
+    },
+    async (request, reply) => {
+      const tenantId = request.params.tenantId;
+      const serviceCallId = request.params.serviceCallId;
+      const userId = request.requestContext.get('userId');
+      if (userId === undefined) {
+        return reply.status(400).send({ message: 'Missing userId in request context' });
+      }
+      if (!tenantPersistence.isUserInTenant(userId, tenantId)) {
+        return reply.status(404).send({ message: 'User is not in tenant' });
+      }
+      await userPersistence.removeServiceCallFavorite(userId, serviceCallId);
+      return reply.status(204).send();
+    }
+  );
+
   _fastify.post(
     '/:tenantId/serviceCall/http',
     {
