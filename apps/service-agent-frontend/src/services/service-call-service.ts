@@ -60,6 +60,7 @@ export class ServiceCallService {
         { headers: { 'x-user-id': this.userService.userId() } }
       )
     );
+    this.serviceCalls.reload();
   }
 
   async getHttpServiceCall(id: number) {
