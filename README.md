@@ -49,3 +49,7 @@ This is the frontend and backend for a service agent that allows to send request
 
 1. `cd` to `apps/service-agent-frontend`
 2. Run `ng serve`
+
+### Mocked requests
+
+When creating a HTTP call to a URL starting with `http://example.com`, the response is mocked.
