@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { UserService } from './user-service.js';
 import { environment } from '../environments/environment.js';
 import { HttpClient, httpResource } from '@angular/common/http';
-import { GetServiceCalls } from 'common';
+import { CreateHttpServiceCallDTO, GetServiceCalls } from 'common';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -50,5 +50,15 @@ export class ServiceCallService {
       )
     );
     this.serviceCalls.reload();
+  }
+
+  async createHttpServiceCall(dto: CreateHttpServiceCallDTO) {
+    await lastValueFrom(
+      this.http.post(
+        `${environment.apiUrl}/tenant/${this.userService.currentTenant()}/serviceCall/http`,
+        dto,
+        { headers: { 'x-user-id': this.userService.userId() } }
+      )
+    );
   }
 }

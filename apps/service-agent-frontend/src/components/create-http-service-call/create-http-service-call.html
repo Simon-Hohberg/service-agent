@@ -1,1 +1,76 @@
-<p>create-http-service-call works!</p>
+<form
+  [formGroup]="form"
+  (ngSubmit)="createHttpServiceCall()"
+  style="display: flex; flex-direction: column"
+>
+  <mat-form-field>
+    <input type="text" matInput placeholder="Name" formControlName="name" />
+  </mat-form-field>
+  <mat-checkbox formControlName="isFavorite">Favorite</mat-checkbox>
+
+  <mat-form-field style="margin-top: 20px">
+    <mat-label>HTTP Method</mat-label>
+    <mat-select formControlName="method">
+      <mat-option value="GET">GET</mat-option>
+      <mat-option value="POST">POST</mat-option>
+      <mat-option value="PUT">PUT</mat-option>
+      <mat-option value="DELETE">DELETE</mat-option>
+      <mat-option value="PATCH">PATCH</mat-option>
+      <mat-option value="HEAD">HEAD</mat-option>
+      <mat-option value="OPTIONS">OPTIONS</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <input type="text" matInput placeholder="URL" formControlName="url" />
+  </mat-form-field>
+
+  <mat-checkbox [(ngModel)]="scheduleExecution" [ngModelOptions]="{ standalone: true }"
+    >scheduleExecution</mat-checkbox
+  >
+
+  @if (scheduleExecution()) {
+  <mat-form-field>
+    <mat-label>Choose a date</mat-label>
+    <input formControlName="scheduledDate" matInput [matDatepicker]="datePicker" />
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
+    <mat-datepicker #datePicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Pick a time</mat-label>
+    <input matInput formControlName="scheduledTime" [matTimepicker]="timePicker" />
+    <mat-timepicker-toggle matIconSuffix [for]="timePicker" />
+    <mat-timepicker #timePicker />
+  </mat-form-field>
+  }
+
+  <ng-container formArrayName="headers">
+    @for (headerForm of headers.controls; track $index) {
+    <div class="header-form-row" [formGroup]="headerForm">
+      <mat-form-field appearance="fill">
+        <input matInput formControlName="key" placeholder="Header key" />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <input matInput formControlName="value" placeholder="Header value" />
+      </mat-form-field>
+      <button mat-mini-fab (click)="deleteHeader($index)">
+        <mat-icon class="delete-btn">delete_forever</mat-icon>
+      </button>
+    </div>
+    }
+  </ng-container>
+
+  <button matFab extended (click)="addHeader()">
+    <mat-icon>add</mat-icon>
+    Add Header
+  </button>
+
+  <mat-form-field>
+    <mat-label>Body</mat-label>
+    <textarea matInput cols="30" rows="10" formControlName="body"></textarea>
+  </mat-form-field>
+
+  <button matFab extended style="align-self: flex-start" type="submit" [disabled]="!form.valid">
+    Create
+  </button>
+</form>

@@ -50,4 +50,8 @@ export class ServiceCallList {
       await this.serviceCallService.addFavorite(element.id);
     }
   }
+
+  refreshServiceCalls() {
+    this.serviceCallService.serviceCalls.reload();
+  }
 }

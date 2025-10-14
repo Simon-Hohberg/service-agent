@@ -1,8 +1,8 @@
-import { CreateHttpServiceCall, UserWithTenantsDTO } from 'common';
+import { CreateHttpServiceCallDTO, UserWithTenantsDTO } from 'common';
 import { HttpServiceCallDetails, PrismaClient, ServiceCall } from '../../generated/client/client.js';
 import { prismaClient } from './prisma-client.js';
 
-export type CreateServiceCall = CreateHttpServiceCall & { protocol: 'HTTP'; tenantId: string };
+export type CreateServiceCall = CreateHttpServiceCallDTO & { protocol: 'HTTP'; tenantId: string };
 
 export type ServiceCallDetails = HttpServiceCallDetails;
 

@@ -4,9 +4,19 @@
 </div>
 }
 
-<mat-slide-toggle style="align-self: flex-end" [(ngModel)]="showOnlyFavorites"
-  >Show Only Favorites</mat-slide-toggle
+<div
+  style="
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+  "
 >
+  <button matIconButton (click)="refreshServiceCalls()"><mat-icon>refresh</mat-icon></button>
+  <mat-slide-toggle [(ngModel)]="showOnlyFavorites">Show Only Favorites</mat-slide-toggle>
+</div>
 
 <table mat-table [dataSource]="serviceCalls()" class="mat-elevation-z8">
   <ng-container matColumnDef="favorite">
@@ -49,13 +59,13 @@
   </ng-container>
 
   <ng-container matColumnDef="add">
-    <td mat-footer-cell *matFooterCellDef [attr.colspan]="columns.length">
+    <td mat-footer-cell *matFooterCellDef [attr.colspan]="columns.length" style="overflow: visible">
       <div style="display: flex; flex-direction: column; align-items: center; width: 100%">
         <div style="display: flex; flex-direction: row; align-items: center">
-          <button matIconButton [matMenuTriggerFor]="menu" aria-label="Add new service call">
+          <button matFab extended [matMenuTriggerFor]="menu" aria-label="Add new service call">
             <mat-icon>add_circle</mat-icon>
+            <span style="margin-left: 10px">Add New Service Call</span>
           </button>
-          <span style="margin-left: 10px">Add New Service Call</span>
         </div>
         <mat-menu #menu="matMenu">
           @for (protocol of protocols; track $index) {

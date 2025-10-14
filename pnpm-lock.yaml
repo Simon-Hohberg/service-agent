@@ -4,12 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  prisma:
-    prisma:
-      specifier: latest
-      version: 6.17.1
-
 importers:
 
   .:

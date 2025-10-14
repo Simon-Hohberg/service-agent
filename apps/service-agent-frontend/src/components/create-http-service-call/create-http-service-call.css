@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.header-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.header-form-row mat-form-field {
+  flex: 1;
+}
+
+.header-form-row button {
+  margin-bottom: 20px;
+}

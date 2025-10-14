@@ -232,6 +232,9 @@ export function tenantRoutes(_fastify: typeof fastify) {
       };
 
       const createServiceCallResult = await serviceCallPersistence.createServiceCall(serviceCallData);
+      if (serviceCallData.isFavorite) {
+        await userPersistence.addServiceCallFavorite(userId, createServiceCallResult.serviceCall.id);
+      }
 
       if (serviceCallData.scheduledAt) {
         scheduleJob(new Date(serviceCallData.scheduledAt), () => {

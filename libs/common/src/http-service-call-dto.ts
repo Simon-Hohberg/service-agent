@@ -12,13 +12,16 @@ const headers = {
 
 export type HttpHeaders = FromSchema<typeof headers>;
 
+const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'] as const;
+export type HttpMethod = (typeof httpMethods)[number];
+
 const body = { type: 'string' } as const satisfies JSONSchema;
 
 const httpRequest = {
   type: 'object',
   properties: {
     url: { type: 'string', format: 'uri' },
-    method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] },
+    method: { type: 'string', enum: httpMethods },
     headers,
     body,
   },
@@ -49,17 +52,17 @@ export const getHttpServiceCallDtoSchema = {
   required: ['name', 'request', 'response'],
 } as const satisfies JSONSchema;
 
-export type GetHttpServiceCall = FromSchema<typeof getHttpServiceCallDtoSchema>;
+export type GetHttpServiceCallDTO = FromSchema<typeof getHttpServiceCallDtoSchema>;
 
 export const createHttpServiceCallDtoSchema = {
   $id: 'createHttpServiceCall',
   type: 'object',
   properties: {
-    ...omit(serviceCallProperties, ['id', 'protocol']),
+    ...omit(serviceCallProperties, ['id', 'protocol', 'status', 'submittedAt', 'executedAt']),
     request: httpRequest,
   },
   additionalProperties: false,
   required: ['name', 'request'],
 } as const satisfies JSONSchema;
 
-export type CreateHttpServiceCall = FromSchema<typeof createHttpServiceCallDtoSchema>;
+export type CreateHttpServiceCallDTO = FromSchema<typeof createHttpServiceCallDtoSchema>;
