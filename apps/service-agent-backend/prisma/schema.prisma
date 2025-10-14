@@ -70,6 +70,8 @@ enum HttpMethod {
   PUT
   DELETE
   PATCH
+  HEAD
+  OPTIONS
 }
 
 model HttpServiceCallDetails {
