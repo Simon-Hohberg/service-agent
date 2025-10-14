@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { UserService } from '../../services/user-service.js';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-service-call-list',
@@ -22,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatMenuModule,
     MatButtonModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './service-call-list.html',
   styleUrl: './service-call-list.css',
@@ -32,6 +34,14 @@ export class ServiceCallList {
   protected protocols = ['HTTP'] as const;
   protected selectedProtocol = model<Protocol>('HTTP');
   protected columns = ['favorite', 'id', 'name', 'submitted', 'execution', 'status', 'details'];
+  protected showOnlyFavorites = model<boolean>(false);
+  protected serviceCalls = computed(() => {
+    const calls = this.serviceCallService.serviceCalls.value() ?? [];
+    if (this.showOnlyFavorites()) {
+      return calls.filter((c) => c.isFavorite);
+    }
+    return calls;
+  });
 
   async toggleFavorite(element: ServiceCall) {
     if (element.isFavorite) {
