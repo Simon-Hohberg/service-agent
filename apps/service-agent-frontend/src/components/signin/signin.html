@@ -1,3 +1,27 @@
-<label for="name">Name: </label>
-<input id="name" type="text" [formControl]="userId" />
-<button type="button" (click)="signin()" [disabled]="userId.invalid">Sign In</button>
+@if (userService.signInResource.isLoading()) {
+<div class="overlay">
+  <mat-spinner></mat-spinner>
+</div>
+}
+<mat-card>
+  <mat-card-title>Login</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="signin()">
+      <p>
+        <mat-form-field>
+          <input type="text" matInput placeholder="User ID" formControlName="userId" />
+        </mat-form-field>
+      </p>
+
+      @if (userService.signInResource.error()) {
+      <p class="error">
+        {{ userService.signInResource.error()?.message }}
+      </p>
+      }
+
+      <div class="button">
+        <button type="submit" mat-button>Login</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
