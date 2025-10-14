@@ -3,6 +3,12 @@
   (ngSubmit)="createHttpServiceCall()"
   style="display: flex; flex-direction: column"
 >
+  @if (serviceCallStatus() !== null) {
+  <div>{{ serviceCallStatus() }}</div>
+  }
+
+  <h2>Request</h2>
+
   <mat-form-field>
     <input type="text" matInput placeholder="Name" formControlName="name" />
   </mat-form-field>
@@ -71,6 +77,25 @@
   </mat-form-field>
 
   <button matFab extended style="align-self: flex-start" type="submit" [disabled]="!form.valid">
-    Create
+    {{ isDetail ? 'Re-Create' : 'Create' }}
   </button>
 </form>
+
+<mat-divider style="margin-top: 40px"></mat-divider>
+
+@if (response() !== null) {
+<div style="margin-top: 20px; display: flex; flex-direction: column">
+  <h2>Response</h2>
+  <div>Status Code: {{ response()?.statusCode }}</div>
+  <div>Headers:</div>
+  <div style="margin-left: 20px">
+    @for (header of response()?.headers | keyvalue; track $index) {
+    <div>{{ header.key }}: {{ header.value }}</div>
+    }
+  </div>
+  <div>Body:</div>
+  <pre style="background-color: #f0f0f0; padding: 10px; border-radius: 5px"
+    >{{ response()?.body }}
+  </pre>
+</div>
+}

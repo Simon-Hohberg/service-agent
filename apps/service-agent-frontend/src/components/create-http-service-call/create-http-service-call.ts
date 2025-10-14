@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, inject, model, OnInit, signal } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -18,9 +18,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-import { CreateHttpServiceCallDTO } from 'common';
+import { CreateHttpServiceCallDTO, HttpResponse, ServiceCallStatus } from 'common';
 import { ServiceCallService } from '../../services/service-call-service.js';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { KeyValuePipe } from '@angular/common';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-create-http-service-call',
@@ -38,14 +40,20 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatOptionModule,
     MatSelectModule,
+    KeyValuePipe,
+    MatDividerModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-http-service-call.html',
   styleUrl: './create-http-service-call.css',
 })
-export class CreateHttpServiceCall {
+export class CreateHttpServiceCall implements OnInit {
   protected serviceCallService = inject(ServiceCallService);
   protected router = inject(Router);
+  protected activatedRoute = inject(ActivatedRoute);
+  protected isDetail = false;
+  protected response = signal<HttpResponse | null>(null);
+  protected serviceCallStatus = signal<ServiceCallStatus | null>(null);
   protected readonly headers = new FormArray<
     FormGroup<{
       key: FormControl<string | null>;
@@ -64,13 +72,45 @@ export class CreateHttpServiceCall {
       [Validators.pattern('GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS'), Validators.required]
     ),
     headers: this.headers,
-    body: new FormControl(null),
+    body: new FormControl<string | null>(null),
   });
 
   constructor() {
     this.form.events.subscribe((e) => {
       console.log(e);
     });
+  }
+
+  ngOnInit(): void {
+    this.isDetail = this.activatedRoute.snapshot.paramMap.has('id');
+    if (this.isDetail) {
+      const id = Number.parseInt(this.activatedRoute.snapshot.paramMap.get('id')!);
+      this.serviceCallService.getHttpServiceCall(id).then((data) => {
+        const headersArray = Object.entries(data.request.headers ?? {}).map(([key, value]) => ({
+          key,
+          value,
+        }));
+        this.serviceCallStatus.set(data.status!);
+        if (data.scheduledAt !== undefined) {
+          this.scheduleExecution.set(true);
+        }
+
+        if (data.response !== undefined) {
+          this.response.set(data.response);
+        }
+
+        this.form.setValue({
+          name: data.name,
+          isFavorite: data.isFavorite ?? false,
+          scheduledDate: data.scheduledAt ? new Date(data.scheduledAt) : null,
+          scheduledTime: data.scheduledAt ? new Date(data.scheduledAt) : null,
+          url: data.request.url,
+          method: data.request.method,
+          headers: headersArray,
+          body: data.request.body ?? null,
+        });
+      });
+    }
   }
 
   protected scheduleExecution = model(false);

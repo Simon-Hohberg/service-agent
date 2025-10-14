@@ -40,6 +40,8 @@ const httpResponse = {
   additionalProperties: false,
 } as const satisfies JSONSchema;
 
+export type HttpResponse = FromSchema<typeof httpResponse>;
+
 export const getHttpServiceCallDtoSchema = {
   $id: 'httpServiceCall',
   type: 'object',

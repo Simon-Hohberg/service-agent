@@ -6,3 +6,14 @@ mat-toolbar {
   min-height: 80px;
   background-color: lightgrey;
 }
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  max-width: 1200px;
+  width: 100%;
+}

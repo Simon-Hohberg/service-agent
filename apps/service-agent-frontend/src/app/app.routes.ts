@@ -23,6 +23,7 @@ export const routes: Routes = [
     ],
     children: [
       { path: 'serviceCall/http/new', component: CreateHttpServiceCall },
+      { path: 'serviceCall/http/:id', component: CreateHttpServiceCall },
       { path: 'serviceCall/list', component: ServiceCallList },
       { path: '', redirectTo: 'serviceCall/list', pathMatch: 'full' },
     ],
