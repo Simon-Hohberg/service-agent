@@ -17,7 +17,7 @@ export const fastify = Fastify({
 }).withTypeProvider<JsonSchemaToTsProvider>();
 
 fastify.register(cors, {
-  // put your options here
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
 });
 fastify.register(fastifyRequestContext);
 fastify.register(authRoutes, { prefix: '/auth' });

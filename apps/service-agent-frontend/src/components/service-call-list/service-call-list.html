@@ -1,10 +1,76 @@
-<fieldset>
-  <select [(ngModel)]="selectedProtocol">
-    @for (protocol of protocols; track $index) {
-    <option [value]="protocol">{{ protocol }}</option>
-    }
-  </select>
-  <button routerLink="{{ [`/serviceCall/${selectedProtocol().toLocaleLowerCase()}/new`] }}">
-    New
-  </button>
-</fieldset>
+@if (serviceCallService.serviceCalls.isLoading()) {
+<div class="overlay">
+  <mat-spinner></mat-spinner>
+</div>
+}
+<table
+  mat-table
+  [dataSource]="serviceCallService.serviceCalls.value() ?? []"
+  class="mat-elevation-z8"
+>
+  <ng-container matColumnDef="favorite">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <mat-icon (click)="toggleFavorite(element)">{{
+        element.isFavorite ? 'star' : 'star_border'
+      }}</mat-icon>
+    </td></ng-container
+  >
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Job Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="submitted">
+    <th mat-header-cell *matHeaderCellDef>Submitted</th>
+    <td mat-cell *matCellDef="let element">{{ element.submittedAt }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="execution">
+    <th mat-header-cell *matHeaderCellDef>Execution</th>
+    <td mat-cell *matCellDef="let element">{{ element.executedAt }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="details">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element"><button mat-button>Details</button></td>
+  </ng-container>
+
+  <ng-container matColumnDef="add">
+    <td mat-footer-cell *matFooterCellDef [attr.colspan]="columns.length">
+      <div style="display: flex; flex-direction: column; align-items: center; width: 100%">
+        <div style="display: flex; flex-direction: row; align-items: center">
+          <button matIconButton [matMenuTriggerFor]="menu" aria-label="Add new service call">
+            <mat-icon>add_circle</mat-icon>
+          </button>
+          <span style="margin-left: 10px">Add New Service Call</span>
+        </div>
+        <mat-menu #menu="matMenu">
+          @for (protocol of protocols; track $index) {
+          <button
+            mat-menu-item
+            routerLink="{{ [`/serviceCall/${protocol.toLocaleLowerCase()}/new`] }}"
+          >
+            <span>{{ protocol }}</span>
+          </button>
+          }
+        </mat-menu>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columns"></tr>
+  <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  <tr mat-footer-row *matFooterRowDef="['add']" class="example-second-footer-row"></tr>
+</table>

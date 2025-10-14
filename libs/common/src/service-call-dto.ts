@@ -14,7 +14,7 @@ export const serviceCallProperties = {
   isFavorite: { type: 'boolean' },
 } as const satisfies Record<string, JSONSchema>;
 
-export const getServiceCallDtoSchema = {
+export const serviceCallDtoSchema = {
   $id: 'serviceCall',
   type: 'object',
   properties: serviceCallProperties,
@@ -22,10 +22,12 @@ export const getServiceCallDtoSchema = {
   required: ['id', 'name', 'protocol', 'status', 'submittedAt', 'isFavorite'],
 } as const satisfies JSONSchema;
 
+export type ServiceCall = FromSchema<typeof serviceCallDtoSchema>;
+
 export const getServiceCallsDtoSchema = {
   $id: 'httpServiceCall',
   type: 'array',
-  items: getServiceCallDtoSchema,
+  items: serviceCallDtoSchema,
 } as const satisfies JSONSchema;
 
 export type GetServiceCalls = FromSchema<typeof getServiceCallsDtoSchema>;

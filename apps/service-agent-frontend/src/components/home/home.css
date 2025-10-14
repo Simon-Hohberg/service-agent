@@ -3,5 +3,6 @@
 }
 
 mat-toolbar {
-  min-height: 60px;
+  min-height: 80px;
+  background-color: lightgrey;
 }
