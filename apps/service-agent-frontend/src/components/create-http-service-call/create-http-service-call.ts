@@ -1,4 +1,5 @@
-import { Component, inject, model, OnInit, signal } from '@angular/core';
+import { KeyValuePipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   FormArray,
   FormControl,
@@ -12,17 +13,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CreateHttpServiceCallDTO, HttpResponse, ServiceCallStatus } from 'common';
 import { ServiceCallService } from '../../services/service-call-service.js';
-import { ActivatedRoute, Router } from '@angular/router';
-import { KeyValuePipe } from '@angular/common';
-import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-create-http-service-call',
@@ -52,6 +52,7 @@ export class CreateHttpServiceCall implements OnInit {
   protected router = inject(Router);
   protected activatedRoute = inject(ActivatedRoute);
   protected isDetail = false;
+  protected scheduleExecution = false;
   protected response = signal<HttpResponse | null>(null);
   protected serviceCallStatus = signal<ServiceCallStatus | null>(null);
   protected readonly headers = new FormArray<
@@ -92,7 +93,7 @@ export class CreateHttpServiceCall implements OnInit {
         }));
         this.serviceCallStatus.set(data.status!);
         if (data.scheduledAt !== undefined) {
-          this.scheduleExecution.set(true);
+          this.scheduleExecution = true;
         }
 
         if (data.response !== undefined) {
@@ -106,20 +107,28 @@ export class CreateHttpServiceCall implements OnInit {
           scheduledTime: data.scheduledAt ? new Date(data.scheduledAt) : null,
           url: data.request.url,
           method: data.request.method,
-          headers: headersArray,
+          headers: [],
           body: data.request.body ?? null,
         });
+
+        for (const headerGroup of headersArray.map(
+          (header) =>
+            new FormGroup({
+              key: new FormControl(header.key, Validators.minLength(1)),
+              value: new FormControl(header.value, Validators.minLength(1)),
+            })
+        )) {
+          this.headers.push(headerGroup);
+        }
       });
     }
   }
-
-  protected scheduleExecution = model(false);
 
   protected async createHttpServiceCall() {
     if (this.form.valid) {
       const value = this.form.value;
       const scheduledAt =
-        value.scheduledDate && value.scheduledTime
+        this.scheduleExecution && value.scheduledDate && value.scheduledTime
           ? new Date(
               value.scheduledDate.getFullYear(),
               value.scheduledDate.getMonth(),

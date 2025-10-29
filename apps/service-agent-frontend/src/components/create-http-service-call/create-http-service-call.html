@@ -34,7 +34,7 @@
     >scheduleExecution</mat-checkbox
   >
 
-  @if (scheduleExecution()) {
+  @if (scheduleExecution) {
   <mat-form-field>
     <mat-label>Choose a date</mat-label>
     <input formControlName="scheduledDate" matInput [matDatepicker]="datePicker" />
@@ -59,14 +59,14 @@
       <mat-form-field appearance="fill">
         <input matInput formControlName="value" placeholder="Header value" />
       </mat-form-field>
-      <button mat-mini-fab (click)="deleteHeader($index)">
+      <button type="button" mat-mini-fab (click)="deleteHeader($index)">
         <mat-icon class="delete-btn">delete_forever</mat-icon>
       </button>
     </div>
     }
   </ng-container>
 
-  <button matFab extended (click)="addHeader()">
+  <button type="button" matFab extended (click)="addHeader()">
     <mat-icon>add</mat-icon>
     Add Header
   </button>
@@ -76,7 +76,14 @@
     <textarea matInput cols="30" rows="10" formControlName="body"></textarea>
   </mat-form-field>
 
-  <button matFab extended style="align-self: flex-start" type="submit" [disabled]="!form.valid">
+  <button
+    type="submit"
+    matFab
+    extended
+    style="align-self: flex-start"
+    type="submit"
+    [disabled]="!form.valid"
+  >
     {{ isDetail ? 'Re-Create' : 'Create' }}
   </button>
 </form>
